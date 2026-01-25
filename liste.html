@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="data:,">
+    <title>Liste</title>
+</head>
+<body>
+
+<div class="container">
+    <h1>Liste des personnes</h1>
+
+    <div style="display:flex; gap:10px; justify-content:space-between; margin-bottom:20px; flex-wrap:wrap;">
+        <a href="index.html" class="btn-secondary">Ajouter une autre personne</a>
+
+        <div style="display:flex; gap:10px;">
+            <button id="downloadBtn" class="btn-download" style="display:none;">
+                Télécharger la liste
+            </button>
+            <button id="adminBtn" class="btn-admin">
+                Mode Admin
+            </button>
+        </div>
+    </div>
+
+    <div class="list-section">
+        <h2>Liste : <span id="listName">--</span></h2>
+
+        <div id="loading">Chargement...</div>
+
+        <table id="personTable" style="display:none;">
+            <thead>
+                <tr>
+                    <th>Nom</th>
+                    <th>Prénom</th>
+                    <th>Matricule</th>
+                    <th>Classe</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+
+        <div id="emptyMessage" style="display:none; text-align:center; padding:40px; color:#888;">
+            <p style="font-size:18px; margin-bottom:20px;">
+                Aucune personne enregistrée
+            </p>
+            <a href="index.html" class="btn-primary">
+                Ajouter la première personne
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Librairies PDF -->
+ <!-- Ajoute ceci dans ton HTML avant ton script principal -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
+
+<!-- 🔥 SCRIPT PRINCIPAL (OBLIGATOIRE EN MODULE) -->
+<script type="module" src="liste.js"></script>
+
+</body>
+</html>
