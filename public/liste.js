@@ -45,6 +45,7 @@ let toutesLesPersonnes = [];
 // ==============================
 // ELEMENTS DOM
 // ==============================
+const adminmodify = document.getElementById("adminmodify");
 const adminBtn = document.getElementById("adminBtn");
 const downloadBtn = document.getElementById("downloadBtn");
 const loading = document.getElementById("loading");
@@ -73,6 +74,7 @@ adminBtn.addEventListener("click", () => {
       isAdminMode = true;
       adminBtn.textContent = "Quitter admin";
       downloadBtn.style.display = "inline-block";
+      adminmodify.style.display = "inline-block";
       ajouterIndicateurAdmin();
     } else {
       alert("Mot de passe incorrect !");
@@ -96,6 +98,41 @@ function ajouterIndicateurAdmin() {
 function retirerIndicateurAdmin() {
   document.querySelector(".admin-indicator")?.remove();
 }
+
+
+/* changer son nom et prenom , matricule ou note si on constate qu'on s'est trompé sur l'information qu'on voulait entrer et qu'on est en mode admin
+et on clique sur modifier rt on choisit la personne sur qui on a fait l'erreur ensuite on retourne sur le formulaire pour la corriger*/
+adminmodify.addEventListener("click", async () => {
+  if (!isAdminMode) return alert("Mode admin requis");
+  const personneList = toutesLesPersonnes.map((p, index) => `${index + 1}. ${p.prenom} ${p.nom} (Matricule: ${p.matricule}, Note: ${p.Note})`).join("\n");
+  const choix = prompt(`Choisissez la personne à modifier:\n${personneList}`);
+  const index = parseInt(choix) - 1;
+  if (isNaN(index) || index < 0 || index >= toutesLesPersonnes.length) {
+    return alert("Choix invalide");
+  }
+  const personne = toutesLesPersonnes[index];
+  const nouveauNom = prompt("Nouveau nom :", personne.nom) || personne.nom;
+  const nouveauPrenom =  prompt("Nouveau prénom :", personne.prenom) || personne.prenom;
+  const nouveauMatricule = prompt("Nouveau matricule :", personne.matricule) || personne.matricule;
+  const nouvelleNote = prompt("Nouvelle note :", personne.Note) || personne.Note;
+  try {
+    await addDoc(personnesRef, {
+      nomliste: personne.nomliste,
+      nom: nouveauNom,
+      prenom: nouveauPrenom,
+      matricule: nouveauMatricule,
+      Note: nouvelleNote,
+      createdAt: serverTimestamp()
+    });
+    await deleteDoc(doc(db, "personnes", personne.id));
+    alert("✅ Personne modifiée avec succès !");
+  }
+  catch (error) {
+    console.error("❌ Erreur Firestore :", error);
+    alert("Erreur lors de la modification");
+  }});
+
+
 
 // ==============================
 // SUPPRESSION
@@ -143,7 +180,7 @@ function chargerPersonnes() {
         <td>${p.nom}</td>
         <td>${p.prenom}</td>
         <td>${p.matricule}</td>
-        <td>${p.classe}</td>
+        <td>${p.Note}</td>
         ${isAdminMode ? `<td><button onclick="supprimerPersonne('${p.id}','${p.nom}','${p.prenom}')">Supprimer</button></td>` : ""}
       `;
       tableBody.appendChild(tr);
@@ -165,12 +202,12 @@ downloadBtn.addEventListener("click", () => {
   // ======================
   // HEADER MODERNE
   // ======================
-  pdf.setFillColor(33, 150, 243); // bleu moderne
+  pdf.setFillColor(255, 255, 255); // bleu moderne
   pdf.rect(0, 0, 210, 30, "F");
 
-  pdf.setTextColor(255);
+  pdf.setTextColor(0, 0, 0); // Pour que le texte soit noir;
   pdf.setFontSize(18);
-  pdf.text("GESTION DES PERSONNES", 105, 14, { align: "center" });
+  pdf.text("ECOLE NATIONALE SUPERIEURE POLYTECHNIQUE", 105, 14, { align: "center" });
 
   pdf.setFontSize(12);
   pdf.text(`Liste : ${nomListe}`, 105, 22, { align: "center" });
@@ -182,22 +219,26 @@ downloadBtn.addEventListener("click", () => {
     p.nom,
     p.prenom,
     p.matricule,
-    p.classe
+    p.Note
   ]);
 
   pdf.autoTable({
     startY: 40,
-    head: [["Nom", "Prénom", "Matricule", "Classe"]],
+    head: [["Nom", "Prénom", "Matricule", "Note"]],
     body: tableData,
-    theme: "striped",
+    theme: "grid",
     styles: {
       fontSize: 10,
-      cellPadding: 4
+      cellPadding: 4,
+      linewidth: 0.1,
+      linecolor: [0, 0 ,0]
     },
     headStyles: {
-      fillColor: [33, 150, 243],
-      textColor: 255,
-      fontStyle: "bold"
+      fillColor: [255, 255, 255],
+      textColor: 0,
+      fontStyle: "bold",
+      linewidth: 0.3,
+      linecolor: [0, 0 ,0]
     },
     alternateRowStyles: {
       fillColor: [245, 247, 250]

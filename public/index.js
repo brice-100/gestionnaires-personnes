@@ -58,11 +58,23 @@ async function ajouterPersonne() {
   const nom       = document.getElementById("nom").value.trim();
   const prenom    = document.getElementById("prenom").value.trim();
   const matricule = document.getElementById("matricule").value.trim();
-  const classe    = document.getElementById("classe").value.trim();
+  const Note    = document.getElementById("classe").value.trim();
 
   if (!nomliste || !nom || !prenom) {
     alert("Veuillez remplir les champs obligatoires");
     return;
+  }else {
+    //le nom et prenom doivent etre composés de lettres uniquement et note doit etre un nombre entre 0 et 20
+    const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ '-]+$/;//regex pour les lettres avec accents
+    if (!nameRegex.test(nom) || !nameRegex.test(prenom)) {
+      alert("Le nom et le prénom doivent contenir uniquement des lettres.");
+      return;
+    }
+    const noteValue = parseFloat(Note);
+    if (isNaN(noteValue) || noteValue < 0 || noteValue > 20) {
+      alert("La note doit être un nombre entre 0 et 20.");
+      return;
+    }
   }
 
   try {
@@ -71,7 +83,7 @@ async function ajouterPersonne() {
       nom,
       prenom,
       matricule,
-      classe,
+      Note,
       createdAt: serverTimestamp()
     });
 
