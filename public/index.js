@@ -45,7 +45,10 @@ window.addEventListener("DOMContentLoaded", () => {
 // ==============================
 // 5. GESTION DU FORMULAIRE
 // ==============================
+//ajouter la fonctionnalité qui dit veuillez patientez a apres avoir cliquer sur ajouter  pour eviter les doubles clics
 document.getElementById("personForm").addEventListener("submit", (e) => {
+  const loadingText = document.getElementById("loadingText");
+  loadingText.style.display = "inline";
   e.preventDefault();
   ajouterPersonne();
 });
