@@ -71,14 +71,17 @@ async function ajouterPersonne() {
     const nameRegex = /^[A-Za-zÀ-ÖØ-öø-ÿ '-]+$/;//regex pour les lettres avec accents
     if (!nameRegex.test(nom) || !nameRegex.test(prenom)) {
       alert("Le nom et le prénom doivent contenir uniquement des lettres.");
+      console.error("Valeur de nom ou prénom invalide :", nom, prenom);
       return;
     }
     const noteValue = parseFloat(Note);
+    if(Note !== ""){
     if (isNaN(noteValue) || noteValue < 0 || noteValue > 20) {
       alert("La note doit être un nombre entre 0 et 20.");
+      console.error("Valeur de note invalide :", Note);
       return;
     }
-  }
+  }}
 
   try {
     await addDoc(personnesRef, {
