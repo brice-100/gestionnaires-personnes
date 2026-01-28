@@ -82,6 +82,7 @@ async function ajouterPersonne() {
       return;
     }
   }}
+  
 
   try {
     await addDoc(personnesRef, {

@@ -10,6 +10,7 @@ import {
   onSnapshot,
   addDoc,
   deleteDoc,
+  updateDoc,
   doc,
   serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
@@ -111,28 +112,18 @@ adminmodify.addEventListener("click", async () => {
     return alert("Choix invalide");
   }
   const personne = toutesLesPersonnes[index];
-  const nouveauNom = prompt("Nouveau nom :", personne.nom) || personne.nom;
-  const nouveauPrenom =  prompt("Nouveau prénom :", personne.prenom) || personne.prenom;
-  const nouveauMatricule = prompt("Nouveau matricule :", personne.matricule) || personne.matricule;
   const nouvelleNote = prompt("Nouvelle note :", personne.Note) || personne.Note;
   try {
-    await addDoc(personnesRef, {
-      nomliste: personne.nomliste,
-      nom: nouveauNom,
-      prenom: nouveauPrenom,
-      matricule: nouveauMatricule,
-      Note: nouvelleNote,
-      createdAt: serverTimestamp()
+    await updateDoc(doc(db, "personnes", personne.id), {
+      Note: nouvelleNote
     });
-    await deleteDoc(doc(db, "personnes", personne.id));
-    alert("✅ Personne modifiée avec succès !");
+    alert("✅ Note modifiée avec succès !");
   }
   catch (error) {
     console.error("❌ Erreur Firestore :", error);
     alert("Erreur lors de la modification");
-  }});
-
-
+  }
+});
 
 // ==============================
 // SUPPRESSION
@@ -171,7 +162,11 @@ function chargerPersonnes() {
     snapshot.forEach((docSnap) => {
       toutesLesPersonnes.push({ id: docSnap.id, ...docSnap.data() });
     });
-
+    
+    toutesLesPersonnes.sort((a, b) =>
+  a.nom.localeCompare(b.nom, "fr", { sensitivity: "base" })
+);
+ 
     listNameSpan.textContent = toutesLesPersonnes[0].nomliste;
 
     toutesLesPersonnes.forEach((p) => {
