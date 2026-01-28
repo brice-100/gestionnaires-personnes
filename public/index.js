@@ -6,7 +6,10 @@ import {
   getFirestore, 
   collection, 
   addDoc, 
-  serverTimestamp 
+  serverTimestamp,
+  query,
+  where,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // ==============================
@@ -54,7 +57,19 @@ document.getElementById("personForm").addEventListener("submit", (e) => {
 });
 
 // ==============================
-// 6. AJOUT D’UNE PERSONNE
+// 6. VÉRIFICATION UNICITÉ MATRICULE
+// ==============================
+async function matriculeExiste(matricule) {
+  if (!matricule || matricule.trim() === "") {
+    return false; // Matricule vide = pas d'unicité requise
+  }
+  const q = query(personnesRef, where("matricule", "==", matricule.trim()));
+  const querySnapshot = await getDocs(q);
+  return !querySnapshot.empty;
+}
+
+// ==============================
+// 7. AJOUT D'UNE PERSONNE
 // ==============================
 async function ajouterPersonne() {
   const nomliste  = document.getElementById("nomliste").value.trim();
@@ -85,6 +100,16 @@ async function ajouterPersonne() {
   
 
   try {
+    // Vérifier l'unicité du matricule
+    if (matricule && matricule.trim() !== "") {
+      const existe = await matriculeExiste(matricule);
+      if (existe) {
+        alert("❌ Ce matricule existe déjà ! Veuillez en choisir un autre.");
+        document.getElementById("loadingText").style.display = "none";
+        return;
+      }
+    }
+
     await addDoc(personnesRef, {
       nomliste,
       nom,

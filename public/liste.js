@@ -12,7 +12,9 @@ import {
   deleteDoc,
   updateDoc,
   doc,
-  serverTimestamp
+  serverTimestamp,
+  where,
+  getDocs
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // ==============================
@@ -98,6 +100,21 @@ function ajouterIndicateurAdmin() {
 
 function retirerIndicateurAdmin() {
   document.querySelector(".admin-indicator")?.remove();
+}
+
+// ==============================
+// VÉRIFICATION UNICITÉ MATRICULE
+// ==============================
+async function matriculeExiste(matricule, idExclu = null) {
+  if (!matricule || matricule.trim() === "") {
+    return false; // Matricule vide = pas d'unicité requise
+  }
+  const q = query(personnesRef, where("matricule", "==", matricule.trim()));
+  const querySnapshot = await getDocs(q);
+  
+  // Exclure l'ID si fourni (pour la modification de la même personne)
+  const docs = querySnapshot.docs.filter(d => d.id !== idExclu);
+  return docs.length > 0;
 }
 
 
