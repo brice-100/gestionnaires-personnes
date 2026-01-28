@@ -56,6 +56,7 @@ const personTable = document.getElementById("personTable");
 const tableBody = document.getElementById("tableBody");
 const emptyMessage = document.getElementById("emptyMessage");
 const listNameSpan = document.getElementById("listName");
+const changeListName = document.getElementById("changeListName");
 
 // ==============================
 // CHARGEMENT INITIAL
@@ -70,6 +71,7 @@ adminBtn.addEventListener("click", () => {
     isAdminMode = false;
     adminBtn.textContent = "Mode Admin";
     downloadBtn.style.display = "none";
+    changeListName.style.display = "none";
     retirerIndicateurAdmin();
   } else {
     const password = prompt("Entrer le mot de passe admin");
@@ -78,6 +80,7 @@ adminBtn.addEventListener("click", () => {
       adminBtn.textContent = "Quitter admin";
       downloadBtn.style.display = "inline-block";
       adminmodify.style.display = "inline-block";
+      changeListName.style.display = "inline-block";
       ajouterIndicateurAdmin();
     } else {
       alert("Mot de passe incorrect !");
@@ -115,6 +118,39 @@ async function matriculeExiste(matricule, idExclu = null) {
   // Exclure l'ID si fourni (pour la modification de la même personne)
   const docs = querySnapshot.docs.filter(d => d.id !== idExclu);
   return docs.length > 0;
+}
+
+// ==============================
+// CHANGER NOM DE LISTE (MODE ADMIN)
+// ==============================
+window.changerNomListe = async function() {
+  if (!isAdminMode) return alert("Mode admin requis");
+  const ancienNom = toutesLesPersonnes[0]?.nomliste || "";
+  const nouveauNom = prompt("Nouveau nom de liste :", ancienNom);
+  
+  if (!nouveauNom || nouveauNom.trim() === "" || nouveauNom === ancienNom) {
+    return;
+  }
+
+  if (!confirm(`Changer le nom de liste de "${ancienNom}" à "${nouveauNom}" pour toutes les personnes ?`)) {
+    return;
+  }
+
+  try {
+    // Mettre à jour toutes les personnes avec le nouveau nom de liste
+    for (const personne of toutesLesPersonnes) {
+      await updateDoc(doc(db, "personnes", personne.id), {
+        nomliste: nouveauNom.trim()
+      });
+    }
+    
+    // Mettre à jour le localStorage
+    localStorage.setItem("nomliste", nouveauNom.trim());
+    alert("✅ Nom de liste changé avec succès !");
+  } catch (error) {
+    console.error("❌ Erreur lors du changement de nom de liste :", error);
+    alert("Erreur lors du changement du nom de liste");
+  }
 }
 
 
